@@ -15,7 +15,7 @@ const orderRoutes = require('./routes/order');
 const paymentBRoutes = require('./routes/payment');
 
 // DB Connection
-let connectionString = 'mongodb://localhost:27017';
+let connectionString = 'mongodb://localhost:27017/tshirt';
 if (process.env.ENV == 'production') {
     connectionString = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@${process.env.DATABASE_URI}.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`
 }
