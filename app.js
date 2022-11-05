@@ -15,8 +15,10 @@ const orderRoutes = require('./routes/order');
 const paymentBRoutes = require('./routes/payment');
 
 // DB Connection
+const connectionString = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@${process.env.DATABASE_URI}.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`
+
 mongoose
-    .connect(process.env.DB_URL, {
+    .connect(connectionString, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
@@ -43,5 +45,5 @@ app.use('/api', paymentBRoutes);
 const port = process.env.PORT || 8000;
 
 app.listen(port, () => {
-    console.log(`App is running at ${port}`);
+    console.log(`App is running at ${port} on ${process.env.ENV} environment`);
 });
