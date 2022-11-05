@@ -13,6 +13,7 @@ const categoryRoutes = require('./routes/category');
 const productRoutes = require('./routes/product');
 const orderRoutes = require('./routes/order');
 const paymentBRoutes = require('./routes/payment');
+const corsOptions = require('./config/corsOptions');
 
 // DB Connection
 let connectionString = 'mongodb://localhost:27017/tshirt';
@@ -36,7 +37,7 @@ mongoose
 // Middlewares
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
