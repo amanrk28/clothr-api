@@ -15,7 +15,10 @@ const orderRoutes = require('./routes/order');
 const paymentBRoutes = require('./routes/payment');
 
 // DB Connection
-const connectionString = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@${process.env.DATABASE_URI}.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`
+let connectionString = 'mongodb://localhost:27017';
+if (process.env.ENV == 'production') {
+    connectionString = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@${process.env.DATABASE_URI}.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`
+}
 
 mongoose
     .connect(connectionString, {
