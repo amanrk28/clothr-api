@@ -6,6 +6,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const cloudinary = require('cloudinary').v2;
 
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
@@ -18,7 +19,7 @@ const corsOptions = require('./config/corsOptions');
 // DB Connection
 let connectionString = 'mongodb://localhost:27017/tshirt';
 if (process.env.ENV == 'production') {
-    connectionString = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@${process.env.DATABASE_URI}.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`
+    connectionString = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@${process.env.DATABASE_URI}.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`;
 }
 
 mongoose
@@ -47,6 +48,10 @@ app.use('/api', orderRoutes);
 app.use('/api', paymentBRoutes);
 
 const port = process.env.PORT || 8000;
+
+cloudinary.config({
+    secure: true,
+});
 
 app.listen(port, () => {
     console.log(`App is running at ${port} on ${process.env.ENV} environment`);

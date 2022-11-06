@@ -1,13 +1,13 @@
 const Product = require('../models/product');
 const formidable = require('formidable');
 const lodash = require('lodash');
-const fs = require('fs');
 const { commonMsg } = require('../messages');
 const { productMsg } = require('../messages/product');
+const cloudinary = require('cloudinary').v2;
 
 const getProductById = (req, res, next, id) => {
     Product.findById(id)
-        .populate('cateogry')
+        .populate('category')
         .exec((err, product) => {
             if (err) {
                 return res.status(400).json({
@@ -20,16 +20,7 @@ const getProductById = (req, res, next, id) => {
 };
 
 const getProduct = (req, res) => {
-    req.product.photo = undefined;
     return res.json(req.product);
-};
-// Image delivery Middleware
-const photo = (req, res, next) => {
-    if (req.product.photo.data) {
-        res.set('Content-Type', req.product.photo.contentType);
-        return res.send(req.product.photo.data);
-    }
-    next();
 };
 
 const getMissingFields = (name, description, price, category, stock) => {
@@ -75,17 +66,36 @@ const createProduct = (req, res) => {
                     error: productMsg.fileSize,
                 });
             }
-            product.photo.data = fs.readFileSync(file.photo.path);
-            product.photo.contentType = file.photo.type;
-        }
-        product.save((err, product) => {
-            if (err) {
-                res.status(400).json({
-                    error: 'Saving product in DB FAILED',
+
+            cloudinary.uploader
+                .upload(file.photo.path, {
+                    folder: 'clothr',
+                    use_filename: true,
+                    unique_filename: true,
+                })
+                .then(result => {
+                    product.photo = result.secure_url;
+                    product.save((err, product) => {
+                        if (err) {
+                            console.log(err);
+                            res.status(400).json({
+                                error: `Saving product in DB FAILED - ${err}`,
+                            });
+                        }
+                        res.json(product);
+                    });
                 });
-            }
-            res.json(product);
-        });
+        } else {
+            product.save((err, product) => {
+                if (err) {
+                    console.log(err);
+                    res.status(400).json({
+                        error: `Saving product in DB FAILED - ${err}`,
+                    });
+                }
+                res.json(product);
+            });
+        }
     });
 };
 
@@ -109,17 +119,33 @@ const updateProduct = (req, res) => {
                     error: productMsg.fileSize,
                 });
             }
-            product.photo.data = fs.readFileSync(file.photo.path);
-            product.photo.contentType = file.photo.type;
-        }
-        product.save((err, product) => {
-            if (err) {
-                res.status(400).json({
-                    error: 'Updating product in DB FAILED',
+            cloudinary.uploader
+                .upload(file.photo.path, {
+                    folder: 'clothr',
+                    use_filename: true,
+                    unique_filename: true,
+                })
+                .then(result => {
+                    product.photo = result.secure_url;
+                    product.save((err, product) => {
+                        if (err) {
+                            res.status(400).json({
+                                error: `Updating product in DB FAILED - ${err}`,
+                            });
+                        }
+                        res.json(product);
+                    });
                 });
-            }
-            res.json(product);
-        });
+        } else {
+            product.save((err, product) => {
+                if (err) {
+                    res.status(400).json({
+                        error: `Updating product in DB FAILED - ${err}`,
+                    });
+                }
+                res.json(product);
+            });
+        }
     });
 };
 
@@ -143,7 +169,6 @@ const getAllProducts = (req, res) => {
     let limit = req.query.limit ? parseInt(req.query.limit, 10) : 8;
     let sortBy = req.query.sortBy || '_id';
     Product.find()
-        .select('-photo')
         // .populate("category")
         .sort([[sortBy, 'asc']])
         .limit(limit)
@@ -179,7 +204,6 @@ module.exports = {
     createProduct,
     deleteProduct,
     getProduct,
-    photo,
     updateProduct,
     getAllProducts,
     updateStock,

@@ -22,28 +22,35 @@ const isAdmin = (req, res, next) => {
     next();
 };
 
-const checkIfEmailInUse = (value) => {
+const checkIfEmailInUse = value => {
     return new Promise((resolve, reject) => {
         User.findOne({ email: value }, (err, user) => {
             if (err) {
-                reject(new Error(commonMsg))
+                reject(new Error(commonMsg));
             }
             if (Boolean(user)) {
-                reject(new Error(authMsg.emailAlreadyInUse))
+                reject(new Error(authMsg.emailAlreadyInUse));
             }
             resolve(true);
         });
     });
-}
+};
 
 const validateSignupBody = [
     check('name', authMsg.threeChar('name')).trim().isLength({ min: 3 }),
-    check('email', authMsg.isRequired('email')).trim().isEmail().normalizeEmail().custom(checkIfEmailInUse),
+    check('email', authMsg.isRequired('email'))
+        .trim()
+        .isEmail()
+        .normalizeEmail()
+        .custom(checkIfEmailInUse),
     check('password', authMsg.threeChar('password')).isLength({ min: 3 }),
 ];
 
 const validateSigninBody = [
-    check('email', authMsg.isRequired('email')).trim().isEmail().normalizeEmail(),
+    check('email', authMsg.isRequired('email'))
+        .trim()
+        .isEmail()
+        .normalizeEmail(),
     check('password', authMsg.isRequired('password')).isLength({ min: 3 }),
 ];
 
@@ -51,5 +58,5 @@ module.exports = {
     isAdmin,
     isAuthenticated,
     validateSignupBody,
-    validateSigninBody
+    validateSigninBody,
 };

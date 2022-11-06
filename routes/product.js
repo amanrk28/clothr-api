@@ -7,7 +7,6 @@ const {
     getProductById,
     createProduct,
     getProduct,
-    photo,
     deleteProduct,
     updateProduct,
     getAllProducts,
@@ -28,7 +27,6 @@ router.post(
 );
 
 router.get('/product/:productId', getProduct);
-router.get('/product/photo/:productId', photo);
 router.get('/products', getAllProducts);
 
 router.put(
