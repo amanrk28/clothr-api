@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { getUserById, pushOrderInPurchaseList } = require('../controllers/user');
-const { isSignedIn, isAuthenticated, isAdmin } = require('../controllers/auth');
+const { isSignedIn } = require('../controllers/auth');
 const { updateStock } = require('../controllers/product');
 const {
     getOrderById,
@@ -11,6 +11,7 @@ const {
     getOrderStatus,
     updateOrderStatus,
 } = require('../controllers/order');
+const { isAuthenticated, isAdmin } = require('../middlewares/auth');
 
 // Params
 router.param('userId', getUserById);

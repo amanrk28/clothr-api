@@ -2,6 +2,8 @@ const Product = require('../models/product');
 const formidable = require('formidable');
 const lodash = require('lodash');
 const fs = require('fs');
+const { commonMsg } = require('../messages');
+const { productMsg } = require('../messages/product');
 
 const getProductById = (req, res, next, id) => {
     Product.findById(id)
@@ -9,7 +11,7 @@ const getProductById = (req, res, next, id) => {
         .exec((err, product) => {
             if (err) {
                 return res.status(400).json({
-                    error: 'Product not found in DB',
+                    error: commonMsg.notFound('Product'),
                 });
             }
             req.product = product;
@@ -46,7 +48,7 @@ const createProduct = (req, res) => {
     form.parse(req, (err, fields, file) => {
         if (err) {
             return res.status(400).json({
-                error: 'Problem with image',
+                error: productMsg.imageProblem,
             });
         }
 
@@ -70,7 +72,7 @@ const createProduct = (req, res) => {
         if (file.photo) {
             if (file.photo.size > 3000000) {
                 return res.status(400).json({
-                    error: 'File size is too big',
+                    error: productMsg.fileSize,
                 });
             }
             product.photo.data = fs.readFileSync(file.photo.path);
@@ -94,7 +96,7 @@ const updateProduct = (req, res) => {
     form.parse(req, (err, fields, file) => {
         if (err) {
             return res.status(400).json({
-                error: `Problem with image ${err}`,
+                error: `${productMsg.imageProblem} ${err}`,
             });
         }
 
@@ -104,7 +106,7 @@ const updateProduct = (req, res) => {
         if (file.photo) {
             if (file.photo.size > 3000000) {
                 return res.status(400).json({
-                    error: 'File size is too big',
+                    error: productMsg.fileSize,
                 });
             }
             product.photo.data = fs.readFileSync(file.photo.path);
@@ -155,17 +157,6 @@ const getAllProducts = (req, res) => {
         });
 };
 
-const getAllUniqueCategories = (req, res) => {
-    Product.distinct('category', {}, (err, categories) => {
-        if (err) {
-            res.status(400).json({
-                error: 'No category found',
-            });
-        }
-        res.json(categories);
-    });
-};
-
 const updateStock = (req, res, next) => {
     let ops = req.body.order.products.map(prod => ({
         updateOne: {
@@ -191,6 +182,5 @@ module.exports = {
     photo,
     updateProduct,
     getAllProducts,
-    getAllUniqueCategories,
     updateStock,
 };

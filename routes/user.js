@@ -7,7 +7,8 @@ const {
     updateUser,
     userPurchaseList,
 } = require('../controllers/user');
-const { isSignedIn, isAuthenticated } = require('../controllers/auth');
+const { isSignedIn } = require('../controllers/auth');
+const { isAuthenticated } = require('../middlewares/auth');
 
 router.param('userId', getUserById);
 

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { getUserById } = require('../controllers/user');
-const { isSignedIn, isAuthenticated, isAdmin } = require('../controllers/auth');
+const { isSignedIn } = require('../controllers/auth');
 const {
     getProductById,
     createProduct,
@@ -11,8 +11,8 @@ const {
     deleteProduct,
     updateProduct,
     getAllProducts,
-    getAllUniqueCategories,
 } = require('../controllers/product');
+const { isAuthenticated, isAdmin } = require('../middlewares/auth');
 
 // Params
 router.param('userId', getUserById);
@@ -46,7 +46,5 @@ router.delete(
     isAdmin,
     deleteProduct
 );
-
-router.get('/product/categories', getAllUniqueCategories);
 
 module.exports = router;

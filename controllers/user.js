@@ -1,11 +1,12 @@
 const User = require('../models/user');
 const Order = require('../models/order');
+const { commonMsg } = require('../messages');
 
 const getUserById = (req, res, next, id) => {
     User.findById(id).exec((err, user) => {
         if (err || !user) {
             return res.status(400).json({
-                error: 'No USER found in DB',
+                error: commonMsg.notFound('User'),
             });
         }
         req.profile = user;
@@ -27,7 +28,7 @@ const updateUser = (req, res) => {
         (err, user) => {
             if (err) {
                 return res.status(400).json({
-                    error: 'Your data could not be updated in DB',
+                    error: err,
                 });
             }
             user.salt = undefined;
@@ -43,7 +44,7 @@ const userPurchaseList = (req, res) => {
         .exec((err, order) => {
             if (err) {
                 return res.status(400).json({
-                    error: 'No Order in this account',
+                    error: err,
                 });
             }
             return res.json(order);
@@ -70,7 +71,7 @@ const pushOrderInPurchaseList = (req, res, next) => {
         err => {
             if (err) {
                 return res.status(400).json({
-                    error: 'Unable to save purchase list',
+                    error: err,
                 });
             }
             next();
